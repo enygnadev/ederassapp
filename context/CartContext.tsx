@@ -1,0 +1,133 @@
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { ServiceProduct, CartItem, Order, OrderItem } from '../types';
+import { db, storage } from '../firebase';
+import { collection, addDoc, updateDoc, doc, onSnapshot, query, orderBy, where } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
+interface CartContextType {
+  cart: CartItem[];
+  addToCart: (product: ServiceProduct) => void;
+  removeFromCart: (cartId: string) => void;
+  updateItemDocument: (cartId: string, docName: string, file: File) => void;
+  clearCart: () => void;
+  orders: Order[];
+  placeOrder: (userId: string, userName: string) => Promise<void>;
+  updateOrderStatus: (orderId: string, status: Order['status']) => Promise<void>;
+  isUploading: boolean;
+}
+
+const CartContext = createContext<CartContextType | undefined>(undefined);
+
+export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Note: For a real app, we might want to move Orders fetching to the Dashboard components
+  // to avoid loading everyone's orders globally. 
+  // For now, we will leave the array empty here and fetch in Dashboards.
+  // Or we can use this context to hold "current session orders".
+
+  const addToCart = (product: ServiceProduct) => {
+    const newItem: CartItem = {
+      ...product,
+      cartId: Math.random().toString(36).substr(2, 9),
+      uploadedDocs: {}
+    };
+    setCart([...cart, newItem]);
+  };
+
+  const removeFromCart = (cartId: string) => {
+    setCart(cart.filter(item => item.cartId !== cartId));
+  };
+
+  const updateItemDocument = (cartId: string, docName: string, file: File) => {
+    setCart(prev => prev.map(item => {
+      if (item.cartId === cartId) {
+        return {
+          ...item,
+          uploadedDocs: {
+            ...item.uploadedDocs,
+            [docName]: file
+          }
+        };
+      }
+      return item;
+    }));
+  };
+
+  const clearCart = () => setCart([]);
+
+  const placeOrder = async (userId: string, userName: string) => {
+    setIsUploading(true);
+    try {
+      const orderId = Math.random().toString(36).substr(2, 9).toUpperCase(); // Temporary ID for path structure, Firestore creates real ID
+      
+      const processedItems: OrderItem[] = [];
+
+      // Process each item
+      for (const item of cart) {
+         const uploadedDocsUrls: Record<string, string> = {};
+
+         // Process each document for the item
+         for (const [docName, file] of Object.entries(item.uploadedDocs)) {
+            if (file) {
+               // Secure Path: users/{userId}/orders/{orderId}/{itemTitle}/{filename}
+               // This ensures LGPD compliance by isolating user data
+               const safeDocName = docName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+               const storagePath = `users/${userId}/orders/${orderId}/${item.cartId}/${safeDocName}`;
+               const storageRef = ref(storage, storagePath);
+               
+               await uploadBytes(storageRef, file);
+               const downloadUrl = await getDownloadURL(storageRef);
+               uploadedDocsUrls[docName] = downloadUrl;
+            }
+         }
+
+         processedItems.push({
+            ...item,
+            uploadedDocs: uploadedDocsUrls
+         });
+      }
+
+      const newOrderData: Omit<Order, 'id'> = {
+        userId,
+        userName,
+        items: processedItems,
+        total: cart.reduce((acc, item) => acc + item.price, 0),
+        status: 'pending_docs',
+        date: new Date().toISOString()
+      };
+
+      await addDoc(collection(db, "orders"), newOrderData);
+      clearCart();
+    } catch (error) {
+        console.error("Error placing order:", error);
+        throw error;
+    } finally {
+        setIsUploading(false);
+    }
+  };
+
+  const updateOrderStatus = async (orderId: string, status: Order['status']) => {
+    try {
+        const orderRef = doc(db, "orders", orderId);
+        await updateDoc(orderRef, { status });
+    } catch (error) {
+        console.error("Error updating status:", error);
+        throw error;
+    }
+  };
+
+  return (
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateItemDocument, clearCart, orders, placeOrder, updateOrderStatus, isUploading }}>
+      {children}
+    </CartContext.Provider>
+  );
+};
+
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) throw new Error('useCart must be used within a CartProvider');
+  return context;
+};
