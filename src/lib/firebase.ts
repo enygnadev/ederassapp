@@ -47,9 +47,7 @@ export function getFirebaseStorage() {
   return storage;
 }
 
-// For backward compatibility - initialize only on client
-if (typeof window !== 'undefined') {
-  initializeFirebase();
-}
-
-export { auth, db, storage };
+// For backward compatibility - export getters
+export const auth = getFirebaseAuth();
+export const db = getFirebaseDb();
+export const storage = getFirebaseStorage();
