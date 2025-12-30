@@ -13,9 +13,43 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase only once
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
-export default app;
+// Lazy initialization to avoid prerendering issues
+let app: any;
+let auth: any;
+let db: any;
+let storage: any;
+
+function initializeFirebase() {
+  if (typeof window === 'undefined') {
+    // Don't initialize on server-side (prerendering)
+    return;
+  }
+  if (!app) {
+    app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+    auth = getAuth(app);
+    db = getFirestore(app);
+    storage = getStorage(app);
+  }
+}
+
+export function getFirebaseAuth() {
+  initializeFirebase();
+  return auth;
+}
+
+export function getFirebaseDb() {
+  initializeFirebase();
+  return db;
+}
+
+export function getFirebaseStorage() {
+  initializeFirebase();
+  return storage;
+}
+
+// For backward compatibility - initialize only on client
+if (typeof window !== 'undefined') {
+  initializeFirebase();
+}
+
+export { auth, db, storage };
