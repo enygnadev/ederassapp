@@ -1,6 +1,6 @@
 {
-  "name": "ederass-next",
-  "version": "0.1.0",
+  "name": "eder-martins-assessoria-nautica",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
