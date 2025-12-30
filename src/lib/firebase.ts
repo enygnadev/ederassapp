@@ -15,39 +15,34 @@ const firebaseConfig = {
 
 // Lazy initialization to avoid prerendering issues
 let app: any;
-let auth: any;
-let db: any;
-let storage: any;
 
-function initializeFirebase() {
+function getFirebaseApp() {
   if (typeof window === 'undefined') {
     // Don't initialize on server-side (prerendering)
-    return;
+    return null;
   }
   if (!app) {
     app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-    auth = getAuth(app);
-    db = getFirestore(app);
-    storage = getStorage(app);
   }
+  return app;
 }
 
 export function getFirebaseAuth() {
-  initializeFirebase();
-  return auth;
+  const app = getFirebaseApp();
+  return app ? getAuth(app) : null;
 }
 
 export function getFirebaseDb() {
-  initializeFirebase();
-  return db;
+  const app = getFirebaseApp();
+  return app ? getFirestore(app) : null;
 }
 
 export function getFirebaseStorage() {
-  initializeFirebase();
-  return storage;
+  const app = getFirebaseApp();
+  return app ? getStorage(app) : null;
 }
 
-// For backward compatibility - export getters
+// For backward compatibility - export lazy getters
 export const auth = getFirebaseAuth();
 export const db = getFirebaseDb();
 export const storage = getFirebaseStorage();
