@@ -1,0 +1,32 @@
+// Type declarations for Vite import.meta.env and custom env vars
+interface ImportMetaEnv {
+  readonly VITE_FIREBASE_API_KEY?: string;
+  readonly VITE_FIREBASE_AUTH_DOMAIN?: string;
+  readonly VITE_FIREBASE_PROJECT_ID?: string;
+  readonly VITE_FIREBASE_STORAGE_BUCKET?: string;
+  readonly VITE_FIREBASE_MESSAGING_SENDER_ID?: string;
+  readonly VITE_FIREBASE_APP_ID?: string;
+  readonly VITE_FIREBASE_MEASUREMENT_ID?: string;
+
+  // Also include non-VITE-prefixed variants in case you switch to them
+  readonly FIREBASE_API_KEY?: string;
+  readonly FIREBASE_AUTH_DOMAIN?: string;
+  readonly FIREBASE_PROJECT_ID?: string;
+  readonly FIREBASE_STORAGE_BUCKET?: string;
+  readonly FIREBASE_MESSAGING_SENDER_ID?: string;
+  readonly FIREBASE_APP_ID?: string;
+  readonly FIREBASE_MEASUREMENT_ID?: string;
+
+  // Other envs used by the project
+  readonly GEMINI_API_KEY?: string;
+  readonly VITE_GEMINI_API_KEY?: string;
+
+  // Generic Vite envs
+  readonly MODE?: string;
+  readonly BASE_URL?: string;
+  readonly PROD?: boolean;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
