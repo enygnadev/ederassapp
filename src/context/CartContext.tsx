@@ -12,7 +12,7 @@ interface CartContextType {
   updateItemDocument: (cartId: string, docName: string, file: File) => void;
   clearCart: () => void;
   orders: Order[];
-  placeOrder: (userId: string, userName: string) => Promise<void>;
+  placeOrder: (userId: string, userName: string, paymentMethod?: 'pix' | 'whatsapp' | 'card' | 'manual') => Promise<string | null>;
   updateOrderStatus: (orderId: string, status: Order['status']) => Promise<void>;
   isUploading: boolean;
 }
@@ -54,7 +54,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const clearCart = () => setCart([]);
 
-  const placeOrder = async (userId: string, userName: string) => {
+  const placeOrder = async (userId: string, userName: string, paymentMethod: 'pix' | 'whatsapp' | 'card' | 'manual' = 'pix'): Promise<string | null> => {
     setIsUploading(true);
     try {
       const orderId = Math.random().toString(36).substr(2, 9).toUpperCase();
@@ -85,12 +85,18 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         userName,
         items: processedItems,
         total: cart.reduce((acc, item) => acc + item.price, 0),
-        status: 'pending_docs',
-        date: new Date().toISOString()
+        status: 'pending_payment',
+        date: new Date().toISOString(),
+        payment: {
+          method: paymentMethod,
+          status: 'pending_payment',
+          createdAt: new Date().toISOString()
+        }
       };
 
-      await addDoc(collection(db, "orders"), newOrderData);
+      const docRef = await addDoc(collection(db, "orders"), newOrderData);
       clearCart();
+      return docRef.id;
     } catch (error) {
         console.error("Error placing order:", error);
         throw error;

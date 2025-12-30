@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 import { AuthProvider } from '../context/AuthContext';
 import { CartProvider } from '../context/CartContext';
 import { Layout } from '../components/Layout';
+import { FirestoreInitializer } from '../components/FirestoreInitializer';
 
 export default function RootLayout({
   children,
@@ -29,6 +30,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <FirestoreInitializer />
         <AuthProvider>
           <CartProvider>
             <Layout>

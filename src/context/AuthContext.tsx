@@ -9,6 +9,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   logout: () => Promise<void>;
+  updateProfile: (patch: Partial<User>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -65,8 +66,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser(null);
   };
 
+  const updateProfile = async (patch: Partial<User>) => {
+    if (!user) return;
+    try {
+      const userDocRef = doc(db, "users", user.id);
+      await setDoc(userDocRef, patch, { merge: true });
+      setUser({ ...user, ...patch });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, logout }}>
+    <AuthContext.Provider value={{ user, loading, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,0 +1,13 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/checkout/[orderId]/page": "app/checkout/[orderId]/page.js",
+  "/checkout/page": "app/checkout/page.js",
+  "/dashboard/admin/page": "app/dashboard/admin/page.js",
+  "/dashboard/client/page": "app/dashboard/client/page.js",
+  "/dashboard/employee/page": "app/dashboard/employee/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/login/page": "app/login/page.js",
+  "/page": "app/page.js",
+  "/services/page": "app/services/page.js"
+}

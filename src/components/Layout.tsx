@@ -20,34 +20,34 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-50 glass-nav shadow-lg">
+      <header className="sticky top-0 z-50 glass-nav shadow-lg border-b border-sky-500/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="bg-gradient-to-br from-blue-600 to-cyan-500 p-2.5 rounded-xl shadow-lg group-hover:shadow-blue-500/50 transition-all duration-300">
+              <div className="bg-gradient-to-br from-sky-600 to-cyan-500 p-2.5 rounded-xl shadow-lg group-hover:shadow-sky-500/50 transition-all duration-300 group-hover:scale-110">
                 <Anchor className="h-6 w-6 text-white" />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white leading-none tracking-tight">EDER MARTINS</h1>
-                <p className="text-[10px] text-blue-200 uppercase tracking-[0.2em] mt-1">Assessoria Náutica</p>
+                <p className="text-[10px] text-sky-200 uppercase tracking-[0.2em] mt-1">🚤 Assessoria Náutica</p>
               </div>
             </Link>
 
             <nav className="hidden md:flex items-center gap-8">
-              <Link href="/services" className={`text-sm font-medium transition-colors duration-300 ${pathname === '/services' ? 'text-cyan-300 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]' : 'text-slate-300 hover:text-white'}`}>
-                Serviços
+              <Link href="/services" className={`text-sm font-semibold transition-colors duration-300 ${pathname === '/services' ? 'text-sky-300 drop-shadow-[0_0_8px_rgba(14,165,233,0.6)]' : 'text-slate-300 hover:text-sky-300'}`}>
+                🎯 Serviços
               </Link>
 
               {user ? (
                 <>
                   {user.role === 'client' && (
-                    <Link href="/dashboard/client" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Meus Pedidos</Link>
+                    <Link href="/dashboard/client" className="text-sm font-semibold text-slate-300 hover:text-sky-300 transition-colors">📋 Meus Pedidos</Link>
                   )}
                   {user.role === 'admin' && (
-                    <Link href="/dashboard/admin" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Painel Admin</Link>
+                    <Link href="/dashboard/admin" className="text-sm font-semibold text-slate-300 hover:text-sky-300 transition-colors">⚙️ Painel Admin</Link>
                   )}
                   {user.role === 'employee' && (
-                    <Link href="/dashboard/employee" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Painel Colaborador</Link>
+                    <Link href="/dashboard/employee" className="text-sm font-semibold text-slate-300 hover:text-sky-300 transition-colors">👥 Painel Colaborador</Link>
                   )}
                   <div className="flex items-center gap-4 ml-4 pl-4 border-l border-slate-700">
                     <span className="text-sm text-slate-400">Olá, <span className="text-white font-semibold">{user.name.split(' ')[0]}</span></span>
@@ -57,17 +57,16 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                   </div>
                 </>
               ) : (
-                <Link href="/login" className="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-white/5 border border-transparent hover:border-white/10">
-                  <User className="h-4 w-4" />
-                  Entrar
+                <Link href="/login" className="flex items-center gap-2 text-sm font-semibold text-slate-300 hover:text-sky-300 transition-colors px-4 py-2 rounded-lg hover:bg-white/5 border border-transparent hover:border-sky-400/30">
+                  🔓 Entrar
                 </Link>
               )}
 
               {(!user || user.role === 'client') && (
-                <Link href="/cart" className="relative p-2 text-slate-300 hover:text-cyan-400 transition-colors">
+                <Link href="/checkout" className="relative p-2 text-slate-300 hover:text-sky-400 transition-colors hover:scale-110 duration-300">
                   <ShoppingCart className="h-6 w-6" />
                   {cart.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full shadow-md animate-bounce">
+                    <span className="absolute -top-1 -right-1 bg-gradient-to-r from-sky-500 to-cyan-500 text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full shadow-lg animate-bounce">
                       {cart.length}
                     </span>
                   )}
