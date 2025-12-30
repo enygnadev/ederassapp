@@ -3,13 +3,13 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { Layout } from './components/Layout';
-import { Home } from './pages/Home';
-import { ServiceCatalog } from './pages/ServiceCatalog';
-import { Login } from './pages/Login';
-import { Checkout } from './pages/Checkout';
-import { ClientDashboard } from './pages/dashboards/ClientDashboard';
-import { AdminDashboard } from './pages/dashboards/AdminDashboard';
-import { EmployeeDashboard } from './pages/dashboards/EmployeeDashboard';
+import { Home } from './app/Home';
+import { ServiceCatalog } from './app/ServiceCatalog';
+import { Login } from './app/Login';
+import { Checkout } from './app/Checkout';
+import { ClientDashboard } from './app/dashboards/ClientDashboard';
+import { AdminDashboard } from './app/dashboards/AdminDashboard';
+import { EmployeeDashboard } from './app/dashboards/EmployeeDashboard';
 
 // Route Guard Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRoles: string[] }> = ({ children, allowedRoles }) => {
